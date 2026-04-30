@@ -45,6 +45,6 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 /ios/Podfile.lock
-/lib/generated/
+#/lib/generated/
 /ios/build/
 /android/app/.cxx/
