@@ -1,0 +1,86 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+    id "dev.flutter.flutter-gradle-plugin"
+}
+
+def keystorePropertiesFile = rootProject.file("key.properties")
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
+android {
+    namespace = "com.microlinktech.planter.planter_app"
+    compileSdk = 35
+//    ndkVersion flutter.ndkVersion
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8
+    }
+
+    defaultConfig {
+        applicationId = "com.microlinktech.planter.planter_app"
+        minSdkVersion flutter.minSdkVersion
+        targetSdk 35
+        // You can update the following values to match your application needs.
+        // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
+        versionCode = 34
+        versionName = flutter.versionName
+        ndk {
+            //设置支持的SO库架构（开发者可以根据需要，选择一个或多个平台的so）
+            abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
+        }
+    }
+
+    //打包签名
+    signingConfigs {
+        debug {
+            storeFile = file(keystoreProperties['storeFile'])
+            storePassword = keystoreProperties['storePassword']
+            keyAlias = keystoreProperties['keyAlias']
+            keyPassword = keystoreProperties['keyPassword']
+        }
+        release {
+            keyAlias = keystoreProperties['keyAlias']
+            keyPassword = keystoreProperties['keyPassword']
+            storeFile = file(keystoreProperties['storeFile'])
+            storePassword = keystoreProperties['storePassword']
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig = signingConfigs.debug
+        }
+        release {
+            // Signing with the debug keys for now, so `flutter run --release` works.
+            signingConfig = signingConfigs.release
+        }
+        applicationVariants.all { variant ->
+            variant.outputs.all { output ->
+                def releaseTime = new Date().format("yyyyMMddHHmm", TimeZone.getTimeZone("GMT+08:00"))
+                def fileName = "plant_${defaultConfig.versionName}_${releaseTime}.apk"//_${buildType.name} --> debug 或 release
+                outputFileName = fileName
+            }
+        }
+    }
+
+    buildFeatures {
+        viewBinding true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.4.3'
+    }
+}
+dependencies {
+//    implementation 'com.github.EspressifApp:lib-blufi-android:2.4.1'
+}
+
+flutter {
+    source '../..'
+}
